@@ -179,3 +179,36 @@ def t6_5_train_test_sizes(df):
     train_rows = int(total_rows * 0.8)
     test_rows = total_rows - train_rows
     return (train_rows, test_rows)
+
+
+def t7_1_top_customer(orders, products):
+    """Return the name of the customer with the highest total revenue."""
+    merged = orders.merge(products, on="product_id", how="inner")
+    merged["revenue"] = merged["qty"] * merged["price"]
+    return merged.groupby("customer")["revenue"].sum().idxmax()
+
+
+def t7_2_best_selling_product(orders, products):
+    """Return the name of the product with the highest total quantity sold."""
+    merged = orders.merge(products, on="product_id", how="inner")
+    return merged.groupby("product")["qty"].sum().idxmax()
+
+
+def t7_3_customer_ranking(orders, products):
+    merged = orders.merge(products, on="product_id", how="inner")
+    merged["revenue"] = merged["qty"] * merged["price"]
+    ranking = merged.groupby("customer")["revenue"].sum().sort_values(ascending=False)
+    return ranking.index.tolist()
+
+
+def t7_4_unmatched_orders(orders, products):
+    unmatched = orders[~orders["product_id"].isin(products["product_id"])]
+    return unmatched["order_id"].tolist()
+
+
+def t7_5_save_report(orders, products, path):
+    merged = orders.merge(products, on="product_id", how="inner")
+    merged["revenue"] = merged["qty"] * merged["price"]
+    report = merged.groupby("customer", as_index=False)["revenue"].sum()
+    report = report.sort_values("revenue", ascending=False)
+    report.to_csv(path, index=False)
