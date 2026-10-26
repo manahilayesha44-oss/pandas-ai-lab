@@ -91,3 +91,57 @@ def t4_6_low_stock_or_premium(df):
 
 def t4_7_sort_two_keys(df):
     return df.sort_values(["category", "price"], ascending=[True, False])["product"].tolist()
+
+
+def t5_1_stock_by_category(products):
+    """Return a dict: total stock for each category."""
+    return products.groupby("category")["stock"].sum().to_dict()
+
+
+def t5_2_avg_price_by_category(products):
+    """Return a dict: average price per category, rounded to 2 decimals."""
+    return products.groupby("category")["price"].mean().round(2).to_dict()
+
+
+def t5_3_category_summary(products):
+    return products.groupby("category").agg(n=("product_id", "count"), max_price=("price", "max")).to_dict("index")
+
+
+def t5_4_left_merge_names(orders, products):
+    merged = orders.merge(products, on="product_id", how="left")
+    return merged["product"].tolist()
+
+
+def t5_5_inner_merge_rows(orders, products):
+    """Inner-merge orders with products on product_id. Return the number of rows."""
+    merged = orders.merge(products, on="product_id", how="inner")
+    return len(merged)
+
+
+def t5_6_revenue_list(orders, products):
+    """Inner-merge, then return the revenue of each order (qty * price) as a list."""
+    merged = orders.merge(products, on="product_id", how="inner")
+    return (merged["qty"] * merged["price"]).tolist()
+
+
+def t5_7_revenue_by_customer(orders, products):
+    """Inner-merge, then return a dict: total revenue per customer."""
+    merged = orders.merge(products, on="product_id", how="inner")
+    merged["revenue"] = merged["qty"] * merged["price"]
+    return merged.groupby("customer")["revenue"].sum().to_dict()
+
+
+def t5_8_price_label(products):
+    def label_price(price):
+        if price < 50:
+            return "cheap"
+        elif price < 500:
+            return "mid"
+        else:
+            return "premium"
+    return products["price"].apply(label_price).tolist()
+
+
+def t5_9_upper_names(products):
+    """Return the product names in UPPER CASE (use a str method), as a list."""
+    return products["product"].str.upper().tolist()
