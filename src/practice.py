@@ -59,3 +59,35 @@ def t3_7_clean_students(df):
     clean["math"] = clean["math"].fillna(math_mean)
     clean["english"] = clean["english"].fillna(eng_median)
     return clean
+
+
+def t4_1_cheap_products(df):
+    """Return the product names with price below 50, as a list."""
+    return df[df["price"] < 50]["product"].tolist()
+
+
+def t4_2_accessories_in_stock(df):
+    """Return the names of 'Accessories' products that are in stock."""
+    return df[(df["category"] == "Accessories") & (df["stock"] > 0)]["product"].tolist()
+
+
+def t4_3_top_two_by_price(df):
+    return df.sort_values("price", ascending=False).head(2)["product"].tolist()
+
+
+def t4_4_loc_price(df):
+    """Using loc, return the price in the row whose index label is 3."""
+    return df.loc[3, "price"]
+
+
+def t4_5_iloc_block(df):
+    return df.iloc[0:2, 0:2].values.tolist()
+
+
+def t4_6_low_stock_or_premium(df):
+    """Return the names of products with stock below 6 OR price above 500."""
+    return df[(df["stock"] < 6) | (df["price"] > 500)]["product"].tolist()
+
+
+def t4_7_sort_two_keys(df):
+    return df.sort_values(["category", "price"], ascending=[True, False])["product"].tolist()
