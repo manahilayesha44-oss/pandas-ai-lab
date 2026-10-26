@@ -113,13 +113,11 @@ def t5_4_left_merge_names(orders, products):
 
 
 def t5_5_inner_merge_rows(orders, products):
-    """Inner-merge orders with products on product_id. Return the number of rows."""
     merged = orders.merge(products, on="product_id", how="inner")
     return len(merged)
 
 
 def t5_6_revenue_list(orders, products):
-    """Inner-merge, then return the revenue of each order (qty * price) as a list."""
     merged = orders.merge(products, on="product_id", how="inner")
     return (merged["qty"] * merged["price"]).tolist()
 
@@ -143,5 +141,41 @@ def t5_8_price_label(products):
 
 
 def t5_9_upper_names(products):
-    """Return the product names in UPPER CASE (use a str method), as a list."""
     return products["product"].str.upper().tolist()
+
+
+def t6_1_price_zscore(df):
+    mean = df["price"].mean()
+    std = df["price"].std()
+    zscores = (df["price"] - mean) / std
+    return zscores.round(2).tolist()
+
+
+def t6_2_dummy_columns(df):
+    encoded = pd.get_dummies(df, columns=["category"], prefix="cat", dtype=int)
+    # Return only the new dummy columns added
+    return [col for col in encoded.columns if col.startswith("cat_")]
+
+
+def t6_3_feature_matrix(df):
+    f = df.copy()
+    mean = f["price"].mean()
+    std = f["price"].std()
+    f["price_z"] = ((f["price"] - mean) / std).round(2)
+    f = pd.get_dummies(f, columns=["category"], prefix="cat", dtype=int)
+    X = f.drop(columns=["product_id", "product", "price"])
+    return X
+
+
+def t6_4_minmax_stock(df):
+    min_val = df["stock"].min()
+    max_val = df["stock"].max()
+    scaled = (df["stock"] - min_val) / (max_val - min_val)
+    return scaled.round(2).tolist()
+
+
+def t6_5_train_test_sizes(df):
+    total_rows = len(df)
+    train_rows = int(total_rows * 0.8)
+    test_rows = total_rows - train_rows
+    return (train_rows, test_rows)
