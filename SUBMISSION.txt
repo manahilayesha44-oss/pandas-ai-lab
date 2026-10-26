@@ -1,0 +1,3 @@
+Name: Ayesha Manahil
+SAP ID: 77667
+Repository link: https://github.com/manahilayesha44-oss/pandas-ai-lab.git
